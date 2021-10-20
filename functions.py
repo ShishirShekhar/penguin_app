@@ -1,38 +1,8 @@
 """This module contains the functions"""
 
-import numpy as np
-import pandas as pd
+# Import necessary modules
 import streamlit as st
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.linear_model import LogisticRegression
-
-@st.cache()
-def laod_data():
-    """This function loads the data and return preprocessed data."""
-    # Loading the dataset.
-    csv_file = 'penguin.csv'
-    df = pd.read_csv(csv_file)
-
-    # Drop the NAN values
-    df = df.dropna()
-
-    # Add numeric column 'label' to resemble non numeric column 'species'
-    df['label'] = df['species'].map({'Adelie': 0, 'Chinstrap': 1, 'Gentoo':2})
-
-
-    # Convert the non-numeric column 'sex' to numeric in the DataFrame
-    df['sex'] = df['sex'].map({'Male':0,'Female':1})
-
-    # Convert the non-numeric column 'island' to numeric in the DataFrame
-    df['island'] = df['island'].map({'Biscoe': 0, 'Dream': 1, 'Torgersen':2})
-
-
-    # Create X and y variables
-    X = df[['island', 'bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g', 'sex']]
-    y = df['label']
-
-    return df, X, y
+from models import svc_score, lr_score, rf_score
 
 
 def get_input_data(df):
@@ -48,44 +18,11 @@ def get_input_data(df):
     return [island, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex]
 
 
-@st.cache()
-def svc_score(X, y):
-    """This function process svc model"""
-    svc_model = SVC(kernel = 'linear')
-    svc_model.fit(X, y)
-    score = svc_model.score(X, y)
-    return svc_model, score
-
-
-@st.cache()
-def rf_score(X, y):
-    """This function process rf_clf model"""
-    rf_clf = RandomForestClassifier(n_jobs = -1, n_estimators = 100)
-    rf_clf.fit(X, y)
-    score = rf_clf.score(X, y)
-    return rf_clf, score
-
-
-@st.cache()
-def lr_score(X, y):
-    """This function process rf_clf model"""
-    log_reg = LogisticRegression(n_jobs = -1)
-    log_reg.fit(X, y)
-    score = log_reg.score(X, y)
-    return log_reg, score
-
-
-def clf_s(X, y):
+def model_selector(clf, X, y):
     """
     This take the input of ml model user want to use
     and return model
     """
-    # Add Classifier selector
-    clf = st.sidebar.selectbox('Classifier', 
-                                ('Support Vector Machine', 
-                                'Logistic Regression', 
-                                'Random Forest Classifier')
-    )
     if clf == 'Support Vector Machine':
         return svc_score(X, y)
     elif clf == 'Logistic Regression':
@@ -105,3 +42,36 @@ def prediction(model, feature_list):
     else:
         return "Gentoo"
 
+def prediction_button(feature_list, model, score):
+    # Show given data
+	st.markdown('### Given Data')
+	st.write('Island:', feature_list[0])
+	st.write('Bill Length:', feature_list[1], 'mm')
+	st.write('Bill Depth:', feature_list[2], 'mm')
+	st.write('Flipper Length:', feature_list[3], 'mm')
+	st.write('Body Mass:', feature_list[4], 'gram')
+	st.write('Sex:', feature_list[5])
+
+	# Show processing values
+	st.markdown('### Processing Values')
+	st.write('Classifier used:', model)
+	st.write("Accuracy score of this model is:", score)
+
+	# Process Data
+	if feature_list[0] == 'Biscoe':
+		feature_list[0] = 0
+	elif feature_list[0] == 'Dream':
+		feature_list[0] = 1
+	else:
+		feature_list[0] = 2
+
+	if feature_list[5] == 'Male':
+		feature_list[5] = 0
+	else:
+		feature_list[5] = 1
+
+	species_type = prediction(model, feature_list)
+
+	# Show result
+	st.markdown('### Result')
+	st.success(f"Species predicted: {species_type}")
