@@ -1,6 +1,6 @@
+# Import necessary modules
 import streamlit as st
-from prep_data import df, X_train, X_test, y_train, y_test
-from functions import prediction, clf_s
+from functions import laod_data, get_input_data, prediction, clf_s
 
 # Add title widget
 st.title("Penguin Species Prediction App")  
@@ -8,54 +8,47 @@ st.title("Penguin Species Prediction App")
 # Add sidbar title
 st.sidebar.title("Penguin Species Prediction Values")
 
-# Add 4 sliders and 2 selectbox.
-bill_length_mm = st.sidebar.slider("Bill Length(in mm)", float(df["bill_length_mm"].min()), float(df["bill_length_mm"].max()))
-bill_depth_mm = st.sidebar.slider("Bill Depth(in mm)", float(df["bill_depth_mm"].min()), float(df["bill_depth_mm"].max()))
-flipper_length_mm = st.sidebar.slider("Flipper Length(in mm)", float(df["flipper_length_mm"].min()), float(df["flipper_length_mm"].max()))
-body_mass_g = st.sidebar.slider("Body Mass(in g)", float(df["body_mass_g"].min()), float(df["body_mass_g"].max()))
-island = st.sidebar.selectbox('Island', ['Biscoe', 'Dream', 'Torgersen'])
-sex = st.sidebar.selectbox('Sex', ['Male', 'Female'])
+# Load the data from the dataset 
+df, X, y = laod_data()
 
-# Add Classifier selector
-clf = st.sidebar.selectbox('Classifier',('Support Vector Machine', 'Logistic Regression', 'Random Forest Classifier'))
+# Get input from the user
+feature_list = get_input_data(df)
 
-# Get values
-model, score = clf_s(clf, X_train, y_train)
+# Get input of model from user
+model, score = clf_s(X, y)
 
-# When 'Predict' button is pushed, the 'prediction()' function must be called 
-# and the value returned by it must be stored in a variable, say 'species_type'. 
-# Print the value of 'species_type' and 'score' variable using the 'st.write()' function.
+# if clicked on predict button precict the value
 if st.sidebar.button("Predict"):
 
 	# Show given data
 	st.markdown('### Given Data')
-	st.write('Island:', island)
-	st.write('Bill Length:', bill_length_mm, 'mm')
-	st.write('Bill Depth:', bill_depth_mm, 'mm')
-	st.write('Flipper Length:', flipper_length_mm, 'mm')
-	st.write('Body Mass:', body_mass_g, 'gram')
-	st.write('Sex:', sex)
+	st.write('Island:', feature_list[0])
+	st.write('Bill Length:', feature_list[1], 'mm')
+	st.write('Bill Depth:', feature_list[2], 'mm')
+	st.write('Flipper Length:', feature_list[3], 'mm')
+	st.write('Body Mass:', feature_list[4], 'gram')
+	st.write('Sex:', feature_list[5])
 
 	# Show processing values
 	st.markdown('### Processing Values')
-	st.write('Classifier used:', clf)
+	st.write('Classifier used:', model)
 	st.write("Accuracy score of this model is:", score)
 
 	# Process Data
-	if island == 'Biscoe':
-		island = 0
-	elif island == 'Dream':
-		island = 1
+	if feature_list[0] == 'Biscoe':
+		feature_list[0] = 0
+	elif feature_list[0] == 'Dream':
+		feature_list[0] = 1
 	else:
-		island = 2
+		feature_list[0] = 2
 
-	if sex == 'Male':
-		sex = 0
+	if feature_list[5] == 'Male':
+		feature_list[5] = 0
 	else:
-		sex = 1
+		feature_list[5] = 1
 
-	species_type = prediction(model, island, bill_length_mm, bill_depth_mm, flipper_length_mm, body_mass_g, sex)
+	species_type = prediction(model, feature_list)
 
 	# Show result
 	st.markdown('### Result')
-	st.write("Species predicted:", species_type)
+	st.success(f"Species predicted: {species_type}")
