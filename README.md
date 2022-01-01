@@ -1,7 +1,7 @@
 # penguin_app
 
 ## 📃 Intro
-This web app allows a user to explore and visualize census data
+This web app allows a user to explore about different species of penguin.
 
 
 ## ‼ Dependencies
