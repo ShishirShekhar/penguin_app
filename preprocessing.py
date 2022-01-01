@@ -4,7 +4,7 @@ import streamlit as st
 
 
 @st.cache()
-def laod_data():
+def load_data():
     """This function loads the data and return preprocessed data."""
     # Loading the dataset.
     csv_file = 'penguin.csv'

@@ -2,7 +2,7 @@
 
 # Import necessary modules
 import streamlit as st
-from models import svc_score, lr_score, rf_score
+from models import train_svc, train_lr, train_rf
 
 
 def get_input_data(df):
@@ -24,15 +24,15 @@ def model_selector(clf, X, y):
     and return model
     """
     if clf == 'Support Vector Machine':
-        return svc_score(X, y)
+        return train_svc(X, y)
     elif clf == 'Logistic Regression':
-        return lr_score(X, y)
+        return train_lr(X, y)
     else:
-        return rf_score(X, y)
+        return train_rf(X, y)
 
 
 def prediction(model, feature_list):
-    """This function returns the preddicted value."""
+    """This function returns the predicted value."""
     species = model.predict([feature_list])
     species = species[0]
     if species == 0:

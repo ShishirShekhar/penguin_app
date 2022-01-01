@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 
 @st.cache()
-def svc_score(X, y):
+def train_svc(X, y):
     """This function process svc model"""
     svc_model = SVC(kernel = 'linear')
     svc_model.fit(X, y)
@@ -16,7 +16,7 @@ def svc_score(X, y):
 
 
 @st.cache()
-def rf_score(X, y):
+def train_rf(X, y):
     """This function process rf_clf model"""
     rf_clf = RandomForestClassifier(n_jobs = -1, n_estimators = 100)
     rf_clf.fit(X, y)
@@ -25,7 +25,7 @@ def rf_score(X, y):
 
 
 @st.cache()
-def lr_score(X, y):
+def train_lr(X, y):
     """This function process rf_clf model"""
     log_reg = LogisticRegression(n_jobs = -1)
     log_reg.fit(X, y)

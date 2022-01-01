@@ -1,6 +1,6 @@
 # Import necessary modules
 import streamlit as st
-from preprocessing import laod_data
+from preprocessing import load_data
 from functions import get_input_data, model_selector, prediction_button
 
 # Configure the web page.
@@ -18,7 +18,7 @@ st.title("Penguin Species Prediction App")
 st.sidebar.title("Penguin Species Prediction Values")
 
 # Load the data from the dataset 
-df, X, y = laod_data()
+df, X, y = load_data()
 
 # Get input from the user
 feature_list = get_input_data(df)
@@ -29,7 +29,7 @@ clf = st.sidebar.selectbox('Classifier', ('Support Vector Machine', 'Logistic Re
 # Get model and model score according selected model
 model, score = model_selector(clf, X, y)
 
-# if clicked on predict button precict the value
+# if clicked on predict button predict the value
 if st.sidebar.button("Predict"):
 	prediction_button(feature_list, model, score)
 else:
